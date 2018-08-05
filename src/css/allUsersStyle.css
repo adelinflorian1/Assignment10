@@ -1,0 +1,31 @@
+.titleCard{
+    padding: 5px;
+    border-top:1px solid green;
+}
+
+.titleCard:hover{
+    cursor: pointer;
+}
+
+.contentCard{
+    border-top:0;
+}
+
+.bottomCard{
+    width:100%;
+    left:0;
+}
+
+.extendedCard{
+    width:100%;
+}
+
+.userDetails{
+    position:relative;
+    left:25%;
+    displaay:block;
+    text-align:center;
+    width:50%;
+    height:300px;
+    border:1px solid black;
+}

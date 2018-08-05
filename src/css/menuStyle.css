@@ -1,0 +1,33 @@
+*{
+    box-sizing: border-box;
+    font-family: sans-serif;
+}
+
+body{
+    background: url("../img/background.jpg") center;
+    text-align: center;
+    padding:5px;
+}
+
+.menu{
+    text-align: left;
+    padding: 5px;
+    background: cyan;
+    width:98vw;
+    height: 70px;
+}
+
+.menuItem{
+    padding: 20px;
+    display: inline-block;
+}
+
+#logout{
+    float:right;
+    margin-right: 10px
+}
+
+.menuItem:hover{
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    cursor: pointer;
+}
