@@ -2,6 +2,9 @@
     box-sizing: border-box;
     font-family: sans-serif;
 }
+.container{
+    vertical-align: top;
+}
 
 body{
     background: url("../img/background.jpg") center;

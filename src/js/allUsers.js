@@ -1,76 +1,50 @@
+function APIHandler() {
+    var auth_token = localStorage.getItem('auth_token') || null;
 
-var users = [
-    {
-    name:"Ion",
-    desc:"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet, distinctio doloremque error, eveniet facilis hic, in laboriosam nisi perspiciatis quaerat recusandae rem repellendus reprehenderit tempora ullam ut velit? Dicta, labore!"
-    },
+    this.doRequest = function (paramsObject) {
+        var method = paramsObject.method || 'GET';
+        var data = paramsObject.data || {};
+        var url = paramsObject.url || {};
 
-    {
-        name:"Marcel",
-        desc:"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet, distinctio doloremque error, eveniet facilis hic, in laboriosam nisi perspiciatis quaerat recusandae rem repellendus reprehenderit tempora ullam ut velit? Dicta, labore!"
-    },
+        return $.ajax(url, {
+            method: method,
+            data: data,
+            headers: {
+                'content-type': 'application/json',
+                'authToken': auth_token
+            }
+        })
+    };
 
-    {
-        name:"oIn",
-        desc:"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet, distinctio doloremque error, eveniet facilis hic, in laboriosam nisi perspiciatis quaerat recusandae rem repellendus reprehenderit tempora ullam ut velit? Dicta, labore!"
-    },
+    this.getAllUsers = function() {
+        return this.doRequest({
+            url: 'https://kiss.bitstoneint.com/api/v1/users'
+        });
+    };
 
-    {
-        name:"oIn",
-        desc:"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet, distinctio doloremque error, eveniet facilis hic, in laboriosam nisi perspiciatis quaerat recusandae rem repellendus reprehenderit tempora ullam ut velit? Dicta, labore!"
-    },
+    this.getUserById = function(id) {
+        return this.doRequest({
+            url: 'https://kiss.bitstoneint.com/api/v1/profile?id='+id
+        });
+    };
 
-    {
-        name:"oIn",
-        desc:"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet, distinctio doloremque error, eveniet facilis hic, in laboriosam nisi perspiciatis quaerat recusandae rem repellendus reprehenderit tempora ullam ut velit? Dicta, labore!"
-    },
-
-    {
-        name:"oIn",
-        desc:"Lorem ipsum dolor sit amet, consectetur adipisicing elit. Amet, distinctio doloremque error, eveniet facilis hic, in laboriosam nisi perspiciatis quaerat recusandae rem repellendus reprehenderit tempora ullam ut velit? Dicta, labore!"
+    this.setCredentials = function(authToken) {
+        auth_token = authToken;
     }
-
-
-    ];
-
-function renderUsers(){
-   for(var i=0; i<users.length; i++) {
-       var $card = $('<div/>', {
-           class: 'card'
-       });
-
-       var $content = $('<div/>', {
-           class: 'contentCard'
-       });
-
-       $('<img />',
-           {   src: 'http://via.placeholder.com/200x200',
-               width: '100%',
-               height: '100%'
-           })
-           .appendTo($content);
-
-       $content.appendTo($card);
-
-       $('<div/>', {
-           class: 'titleCard',
-           text: users[i].name
-       }).appendTo($card);
-
-
-       $('<div/>', {
-           class: 'bottomCard',
-           text: 'Click the name for more info!'
-       }).appendTo($card);
-
-       $card.appendTo('.container');
-   }
 }
 
+
+var apiHandler = new APIHandler();
+
+var users=[];
+
 function showUserDetails(currentUser){
-    console.log(currentUser);
+    apiHandler.getUserById(parseInt($(currentUser).children().eq(1).text())).then(function (user){
     var $userDetails = $('<div/>', {
         class: 'userDetails',
+        css: {
+            "margin": "20px"
+        }
     });
 
     $('<div/>', {
@@ -86,36 +60,84 @@ function showUserDetails(currentUser){
 
     $('<div/>', {
         class: 'contentCard',
-        text:'Lorem ipsum dolor sit amet, consectetur adipisicing elit. A accusantium aor sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium or sit amet, consectetur adipisicing elit. A accusantium liquid delectus dolore eligendi est eveniet, facere fugit harum hic illo ipsum nisi non obcaecati quod reiciendis unde! Perferendis, temporibus.',
+        text: 'Birthday: '+user.data.birthday+',\n'+'Job: '+ user.data.crm_company_name+',\n'+'Created at: '+ user.data.created_at +"Random text here",
         css: {
-            "overflow": "auto"
+            "overflow": "auto",
+            "padding-top":"50px"
         }
     }).appendTo($userDetails);
 
     $('<div/>', {
         class: 'bottomCard',
-        text: 'email and phone'
+        text: user.data.email +' | '+ user.data.phone_number | "No number phone",
     }).appendTo($userDetails);
 
 
         $userDetails.appendTo($('.container'));
+    })
 }
 
 
-renderUsers();
+function getAllUsers(){
+    if (localStorage.getItem('auth-token')) {
+        apiHandler.setCredentials(localStorage.getItem('auth-token'));
 
-$('.titleCard').click( function (e){
-    var $allUsers = $('.card');
-    for(var i=0; i<$allUsers.length; i++){
+        apiHandler.getAllUsers().then(function(r) {
+            users = r;
+            renderUsers();
 
-        if(e.currentTarget.textContent ===$($allUsers[i]).children().eq(1).text()){
-            var currentUser = $($allUsers[i]);
-        }
+            $('.titleCard').click( function (e){
+                    var $allUsers = $('.card');
+                    for(var i=0; i<$allUsers.length; i++){
+                        if(e.currentTarget.textContent ===$($allUsers[i]).children().eq(1).text()){
+                            var currentUser = $($allUsers[i]);
+                        }
 
-        $($allUsers[i]).hide();
+                        $($allUsers[i]).hide();
 
+                    }
+                    showUserDetails(currentUser);
+                }
+            );
+
+        })
+    } else {
+        alert("WRONG");
     }
-    showUserDetails(currentUser);
-    }
-);
+}
+getAllUsers();
 
+function renderUsers(){
+
+    for(var i=0; i<users.data.length; i++) {
+        var $card = $('<div/>', {
+            class: 'card'
+        });
+
+        var $content = $('<div/>', {
+            class: 'contentCard'
+        });
+
+        $('<img />',
+            {   src: 'http://via.placeholder.com/200x200',
+                width: '100%',
+                height: '100%'
+            })
+            .appendTo($content);
+
+        $content.appendTo($card);
+
+        $('<div/>', {
+            class: 'titleCard',
+            text: users.data[i].id +'. '+ users.data[i].name
+        }).appendTo($card);
+
+
+        $('<div/>', {
+            class: 'bottomCard',
+            text: 'Click the name for more info!'
+        }).appendTo($card);
+
+        $card.appendTo('.container');
+    }
+}
